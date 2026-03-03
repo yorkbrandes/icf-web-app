@@ -28,7 +28,7 @@ export default async function WizardStartPage({
     return <InvalidLink message="Dieser Link ist ungültig oder abgelaufen." />;
   }
 
-  return <StartSession locale={locale} ref={ref} />;
+  return <StartSession locale={locale} referralCode={ref} />;
 }
 
 function InvalidLink({ message }: { message: string }) {
