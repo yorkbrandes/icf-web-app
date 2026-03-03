@@ -83,7 +83,7 @@ model CaseSummary {
 
 model AidItem {
   id          String       @id @default(cuid())
-  name        String
+  name        String       @unique
   description String?
   category    String
   isActive    Boolean      @default(true)
