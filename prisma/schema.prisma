@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Boss {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id           String     @id @default(cuid())
+  username     String     @unique
+  password     String
+  referralCode String     @unique
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  cases        Case[]
+  customers    Customer[]
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  participantId String   @unique // TN-XXXXXX
+  age           Int
+  gender        String
+  diagnosis     String?
+  adminId       String
+  admin         Admin    @relation(fields: [adminId], references: [id])
+  createdAt     DateTime @default(now())
+  cases         Case[]
+}
+
+model Case {
+  id             String              @id @default(cuid())
+  caseNumber     String              @unique // ICF-YYYY-XXXXXX
+  adminId        String
+  admin          Admin               @relation(fields: [adminId], references: [id])
+  customerId     String
+  customer       Customer            @relation(fields: [customerId], references: [id])
+  status         CaseStatus          @default(OPEN)
+  signaturePath  String?
+  aidWishMissing String?
+  aidWishHave    String?
+  aidWishWant    String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  answers        CaseAnswer[]
+  summary        CaseSummary?
+  aidSelections  AidSelection[]
+  documents      GeneratedDocument[]
+}
+
+enum CaseStatus {
+  OPEN
+  CLOSED
+}
+
+model CaseAnswer {
+  id        String  @id @default(cuid())
+  caseId    String
+  case      Case    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  icfCode   String // e.g. "b130", "d450"
+  qualifier Int // 0–4, 8, 9
+  note      String?
+}
+
+model CaseSummary {
+  id            String @id @default(cuid())
+  caseId        String @unique
+  case          Case   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  goals         Json // Array of {description, timeframe}
+  environment   Json // {livingSituation, supportPersons}
+  generatedText Json // {section1, section2, section3, section4, section5}
+}
+
+model AidItem {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  selections  AidSelection[]
+}
+
+model AidSelection {
+  id        String  @id @default(cuid())
+  caseId    String
+  case      Case    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  aidItemId String
+  aidItem   AidItem @relation(fields: [aidItemId], references: [id])
+  note      String?
+}
+
+model GeneratedDocument {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type      String // "pdf" | "docx"
+  path      String
+  createdAt DateTime @default(now())
+}
+
+model CleanupRun {
+  id               String   @id @default(cuid())
+  ranAt            DateTime @default(now())
+  deletedCustomers Int
+  errors           String?
+}
+
+model WizardSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  adminId   String
+  stepData  Json     @default("{}")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

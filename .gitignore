@@ -78,6 +78,9 @@ web_modules/
 .next
 out
 
+# Uploads (user files, signatures, generated docs)
+uploads/
+
 # Nuxt.js build / generate output
 .nuxt
 dist
