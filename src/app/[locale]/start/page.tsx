@@ -1,20 +1,22 @@
 import { prisma } from "@/lib/db";
-import { createWizardSession, WIZARD_COOKIE } from "@/lib/wizard";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { StartSession } from "./StartSession";
 
 export default async function WizardStartPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ ref?: string }>;
+  searchParams: Promise<{ ref?: string; error?: string }>;
 }) {
   const { locale } = await params;
-  const { ref } = await searchParams;
+  const { ref, error } = await searchParams;
 
   if (!ref) {
-    return <InvalidLink locale={locale} message="Kein Referral-Code angegeben." />;
+    return <InvalidLink message="Kein Referral-Code angegeben." />;
+  }
+
+  if (error === "invalid") {
+    return <InvalidLink message="Dieser Link ist ungültig oder abgelaufen." />;
   }
 
   const admin = await prisma.admin.findUnique({
@@ -23,24 +25,13 @@ export default async function WizardStartPage({
   });
 
   if (!admin || !admin.isActive) {
-    return <InvalidLink locale={locale} message="Dieser Link ist ungültig oder abgelaufen." />;
+    return <InvalidLink message="Dieser Link ist ungültig oder abgelaufen." />;
   }
 
-  // Create wizard session and set cookie
-  const token = await createWizardSession(admin.id);
-  const cookieStore = await cookies();
-  cookieStore.set(WIZARD_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 24 * 60 * 60,
-    path: "/",
-  });
-
-  redirect(`/${locale}/start/consent`);
+  return <StartSession locale={locale} ref={ref} />;
 }
 
-function InvalidLink({ message }: { locale?: string; message: string }) {
+function InvalidLink({ message }: { message: string }) {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <div className="max-w-md text-center px-4">

@@ -24,7 +24,7 @@ export async function createAid(
   if (!name) return { error: "Name ist erforderlich." };
   if (!category) return { error: "Kategorie ist erforderlich." };
 
-  const existing = await prisma.aidItem.findUnique({ where: { name } });
+  const existing = await prisma.aidItem.findFirst({ where: { name } });
   if (existing) return { error: "Ein Hilfsmittel mit diesem Namen existiert bereits." };
 
   await prisma.aidItem.create({ data: { name, category, description } });
