@@ -7,17 +7,26 @@ on:
       - main
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check if Node project exists
-        run: |
-          if [ -f package.json ]; then
-            echo "Node project found"
-          else
-            echo "No Node project yet. Skipping."
-            exit 0
-          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Validate Prisma schema
+        run: DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npx prisma validate
