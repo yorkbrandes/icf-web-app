@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if Node project exists
+        run: |
+          if [ -f package.json ]; then
+            echo "Node project found"
+          else
+            echo "No Node project yet. Skipping."
+            exit 0
+          fi

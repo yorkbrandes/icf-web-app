@@ -1,4 +1,4 @@
-# ICF Web App
+# icf-web-app
 
 ## CI Test
 
