@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - icf_postgres_data:/var/lib/postgresql/data
+    # Not exposed externally – only accessible to app container
+    networks:
+      - internal
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      BOSS_EMAIL: ${BOSS_EMAIL}
+      BOSS_PASSWORD: ${BOSS_PASSWORD}
+      APP_URL: ${APP_URL}
+      RETENTION_DAYS: ${RETENTION_DAYS:-365}
+      UPLOAD_DIR: /app/uploads
+      NODE_ENV: production
+    volumes:
+      - icf_uploads:/app/uploads
+    networks:
+      - internal
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+    depends_on:
+      - app
+
+volumes:
+  icf_postgres_data:
+  icf_uploads:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    driver: bridge
