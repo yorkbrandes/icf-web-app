@@ -51,16 +51,6 @@ export default async function BossDashboardPage({
             href={`/${locale}/boss/cases`}
             description="Alle Fälle systemweit einsehen"
           />
-          <DashboardCard
-            title={t("cleanup")}
-            href={`/${locale}/boss/cleanup`}
-            description="DSGVO-Retention manuell auslösen"
-          />
-          <DashboardCard
-            title={t("logs")}
-            href={`/${locale}/boss/logs`}
-            description="Bereinigungslogs einsehen"
-          />
         </div>
       </main>
     </div>
