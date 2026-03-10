@@ -19,6 +19,9 @@ export async function initWizardSession(formData: FormData): Promise<void> {
   }
 
   const token = await createWizardSession(admin.id);
+  // Store locale in session so all wizard steps can use it for redirects
+  const { updateStepData } = await import("@/lib/wizard");
+  await updateStepData(token, { locale });
   const cookieStore = await cookies();
   cookieStore.set(WIZARD_COOKIE, token, {
     httpOnly: true,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useActionState } from "react";
 import { validateAdminLogin } from "./actions";
 
@@ -8,6 +8,7 @@ type LoginState = { error?: string } | null;
 
 export default function AdminLoginPage() {
   const t = useTranslations("admin.login");
+  const locale = useLocale();
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(
     validateAdminLogin,
     null
@@ -22,6 +23,7 @@ export default function AdminLoginPage() {
           </div>
 
           <form action={formAction} className="space-y-6">
+            <input type="hidden" name="locale" value={locale} />
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 {t("username")}

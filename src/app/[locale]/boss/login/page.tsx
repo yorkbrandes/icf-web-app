@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useActionState } from "react";
 import { validateBossLogin } from "./actions";
 
@@ -10,6 +10,7 @@ type LoginState = {
 
 export default function BossLoginPage() {
   const t = useTranslations("boss.login");
+  const locale = useLocale();
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(
     validateBossLogin,
     null
@@ -25,6 +26,7 @@ export default function BossLoginPage() {
           </div>
 
           <form action={formAction} className="space-y-6">
+            <input type="hidden" name="locale" value={locale} />
             <div>
               <label
                 htmlFor="email"

@@ -21,6 +21,7 @@ export async function submitAids(
   const aidWishHave = (formData.get("aidWishHave") as string)?.trim() || undefined;
   const aidWishWant = (formData.get("aidWishWant") as string)?.trim() || undefined;
 
+  const locale = (session.stepData as { locale?: string }).locale ?? "de";
   await updateStepData(token, { aidWishMissing, aidWishHave, aidWishWant });
-  redirect("aids/../summary");
+  redirect(`/${locale}/start/summary`);
 }

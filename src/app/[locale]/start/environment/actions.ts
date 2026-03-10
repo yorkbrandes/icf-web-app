@@ -13,6 +13,7 @@ export async function submitEnvironment(formData: FormData): Promise<void> {
   const session = await getWizardSession(token);
   if (!session) redirect("/de/start");
 
+  const locale = (session.stepData as { locale?: string }).locale ?? "de";
   const eAnswers = ICF_E_CODES.map((c) => ({
     icfCode: c.code,
     qualifier: parseInt(formData.get(`qualifier_${c.code}`) as string, 10) || 0,
@@ -23,5 +24,5 @@ export async function submitEnvironment(formData: FormData): Promise<void> {
   const supportPersons = (formData.get("supportPersons") as string)?.trim() || "";
 
   await updateStepData(token, { eAnswers, livingSituation, supportPersons });
-  redirect("environment/../goals");
+  redirect(`/${locale}/start/goals`);
 }

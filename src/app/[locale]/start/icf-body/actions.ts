@@ -13,6 +13,7 @@ export async function submitIcfBody(formData: FormData): Promise<void> {
   const session = await getWizardSession(token);
   if (!session) redirect("/de/start");
 
+  const locale = (session.stepData as { locale?: string }).locale ?? "de";
   const allCodes = [...ICF_B_CODES, ...ICF_D_CODES];
   const icfAnswers = allCodes.map((c) => ({
     icfCode: c.code,
@@ -21,5 +22,5 @@ export async function submitIcfBody(formData: FormData): Promise<void> {
   }));
 
   await updateStepData(token, { icfAnswers });
-  redirect("icf-body/../environment");
+  redirect(`/${locale}/start/environment`);
 }

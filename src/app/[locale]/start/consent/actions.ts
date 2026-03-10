@@ -24,6 +24,7 @@ export async function submitConsent(
     return { error: "Bitte stimmen Sie beiden Punkten zu, um fortzufahren." };
   }
 
+  const locale = (session.stepData as { locale?: string }).locale ?? "de";
   await updateStepData(token, { consentGiven: true, consentAge: true });
-  redirect("consent/../profile");
+  redirect(`/${locale}/start/profile`);
 }

@@ -33,6 +33,7 @@ export async function submitSignature(
   }
 
   const data = getStepData(session);
+  const locale = data.locale ?? "de";
   if (!data.participantId || !data.age || !data.gender || !data.goals?.length) {
     return { error: "Unvollständige Daten. Bitte gehen Sie zurück und füllen Sie alle Pflichtfelder aus." };
   }
@@ -113,7 +114,7 @@ export async function submitSignature(
       livingSituation: data.livingSituation ?? "alone",
       supportPersons: data.supportPersons ?? "",
       aidItems: [],
-      locale: "de",
+      locale: (locale as "de" | "en" | "fr"),
     });
 
     // Create CaseSummary
@@ -137,5 +138,5 @@ export async function submitSignature(
     return { error: "Fehler beim Speichern. Bitte versuchen Sie es erneut." };
   }
 
-  redirect(`signature/../done?cn=${encodeURIComponent(caseNumber!)}&pid=${encodeURIComponent(data.participantId)}`);
+  redirect(`/${locale}/start/done?cn=${encodeURIComponent(caseNumber!)}&pid=${encodeURIComponent(data.participantId)}`);
 }

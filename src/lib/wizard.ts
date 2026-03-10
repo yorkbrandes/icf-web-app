@@ -14,6 +14,7 @@ export type Goal = {
 };
 
 export type WizardStepData = {
+  locale?: string;
   // Step 2
   consentGiven?: boolean;
   consentAge?: boolean;

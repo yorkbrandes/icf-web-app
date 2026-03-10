@@ -40,6 +40,7 @@ export async function validateBossLogin(
 ): Promise<LoginState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const locale = (formData.get("locale") as string) || "de";
 
   // Basic validation
   if (!email || !password) {
@@ -79,5 +80,5 @@ export async function validateBossLogin(
     return { error: "Serverfehler. Bitte versuchen Sie es später erneut." };
   }
 
-  redirect("/de/boss/dashboard");
+  redirect(`/${locale}/boss/dashboard`);
 }

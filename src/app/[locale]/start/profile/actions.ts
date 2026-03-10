@@ -19,7 +19,8 @@ export async function submitProfile(
   const session = await getWizardSession(token);
   if (!session) return { error: "Sitzung abgelaufen." };
 
-  const stepData = (session.stepData ?? {}) as { consentGiven?: boolean; participantId?: string };
+  const stepData = (session.stepData ?? {}) as { consentGiven?: boolean; participantId?: string; locale?: string };
+  const locale = stepData.locale ?? "de";
   if (!stepData.consentGiven) return { error: "Bitte zuerst die Einwilligung geben." };
 
   const ageRaw = formData.get("age") as string;
@@ -42,5 +43,5 @@ export async function submitProfile(
   }
 
   await updateStepData(token, { participantId, age, gender, diagnosis });
-  redirect("profile/../icf-body");
+  redirect(`/${locale}/start/icf-body`);
 }

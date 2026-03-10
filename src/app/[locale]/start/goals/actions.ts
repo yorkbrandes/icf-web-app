@@ -33,6 +33,7 @@ export async function submitGoals(
     return { error: "Bitte geben Sie mindestens ein Therapieziel an." };
   }
 
+  const locale = (session.stepData as { locale?: string }).locale ?? "de";
   await updateStepData(token, { goals });
-  redirect("goals/../aids");
+  redirect(`/${locale}/start/aids`);
 }

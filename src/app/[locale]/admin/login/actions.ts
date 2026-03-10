@@ -30,6 +30,7 @@ export async function validateAdminLogin(
 ): Promise<LoginState> {
   const username = (formData.get("username") as string)?.trim();
   const password = formData.get("password") as string;
+  const locale = (formData.get("locale") as string) || "de";
 
   if (!username || !password) {
     return { error: "Benutzername und Passwort erforderlich." };
@@ -66,5 +67,5 @@ export async function validateAdminLogin(
     return { error: "Serverfehler. Bitte versuchen Sie es später erneut." };
   }
 
-  redirect("/de/admin/dashboard");
+  redirect(`/${locale}/admin/dashboard`);
 }
